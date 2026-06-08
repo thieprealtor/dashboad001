@@ -4,14 +4,13 @@ export async function getFirestoreCollection<T>(
   collectionName: string,
   fallbackData: T[]
 ): Promise<T[]> {
+  // Firebase Client SDK is browser-only — skip on server (SSR/prerender)
+  if (typeof window === "undefined") {
+    return fallbackData
+  }
+
   try {
     const { db } = await import("@/lib/firebase/client")
-
-    if (!db) {
-      console.warn(`Firebase not initialized. Using mock data for "${collectionName}".`)
-      return fallbackData
-    }
-
     const snapshot = await getDocs(collection(db, collectionName))
 
     if (snapshot.empty) {
@@ -39,14 +38,13 @@ export async function getFirestoreDocumentCollection<T>(
   collectionName: string,
   fallbackData: T[]
 ): Promise<T[]> {
+  // Firebase Client SDK is browser-only — skip on server (SSR/prerender)
+  if (typeof window === "undefined") {
+    return fallbackData
+  }
+
   try {
     const { db } = await import("@/lib/firebase/client")
-
-    if (!db) {
-      console.warn(`Firebase not initialized. Using mock data for "${collectionName}".`)
-      return fallbackData
-    }
-
     const snapshot = await getDocs(collection(db, collectionName))
 
     if (snapshot.empty) {
