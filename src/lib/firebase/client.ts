@@ -13,36 +13,81 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 }
 
-function validateFirebaseEnv(): void {
-  const requiredEntries: Array<[string, string | undefined]> = [
-    ["NEXT_PUBLIC_FIREBASE_API_KEY", firebaseConfig.apiKey],
-    ["NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN", firebaseConfig.authDomain],
-    ["NEXT_PUBLIC_FIREBASE_PROJECT_ID", firebaseConfig.projectId],
-    ["NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET", firebaseConfig.storageBucket],
-    [
-      "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
-      firebaseConfig.messagingSenderId,
-    ],
-    ["NEXT_PUBLIC_FIREBASE_APP_ID", firebaseConfig.appId],
-  ]
-
-  const missing = requiredEntries
-    .filter(([, value]) => !value)
-    .map(([key]) => key)
-
-  if (missing.length > 0) {
-    throw new Error(
-      `Missing Firebase environment variables: ${missing.join(", ")}`
-    )
-  }
+function isFirebaseConfigured(): boolean {
+  return !!(
+    firebaseConfig.apiKey &&
+    firebaseConfig.authDomain &&
+    firebaseConfig.projectId &&
+    firebaseConfig.storageBucket &&
+    firebaseConfig.messagingSenderId &&
+    firebaseConfig.appId
+  )
 }
 
-validateFirebaseEnv()
+// Lazy singletons — only initialized when first accessed
+let _app: FirebaseApp | null = null
+let _auth: Auth | null = null
+let _db: Firestore | null = null
+let _storage: FirebaseStorage | null = null
 
-export const app: FirebaseApp = getApps().length
-  ? getApp()
-  : initializeApp(firebaseConfig)
+function getFirebaseApp(): FirebaseApp {
+  if (!isFirebaseConfigured()) {
+    throw new Error(
+      `Missing Firebase environment variables. Please set: ` +
+        [
+          "NEXT_PUBLIC_FIREBASE_API_KEY",
+          "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
+          "NEXT_PUBLIC_FIREBASE_PROJECT_ID",
+          "NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET",
+          "NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID",
+          "NEXT_PUBLIC_FIREBASE_APP_ID",
+        ]
+          .filter((key) => !process.env[key])
+          .join(", ")
+    )
+  }
+  if (!_app) {
+    _app = getApps().length ? getApp() : initializeApp(firebaseConfig)
+  }
+  return _app
+}
 
-export const auth: Auth = getAuth(app)
-export const db: Firestore = getFirestore(app)
-export const storage: FirebaseStorage = getStorage(app)
+export const app: FirebaseApp = new Proxy({} as FirebaseApp, {
+  get(_, prop) {
+    return (getFirebaseApp() as unknown as Record<string | symbol, unknown>)[prop]
+  },
+})
+
+export function getFirebaseAuth(): Auth {
+  if (!_auth) _auth = getAuth(getFirebaseApp())
+  return _auth
+}
+
+export function getFirebaseDb(): Firestore {
+  if (!_db) _db = getFirestore(getFirebaseApp())
+  return _db
+}
+
+export function getFirebaseStorage(): FirebaseStorage {
+  if (!_storage) _storage = getStorage(getFirebaseApp())
+  return _storage
+}
+
+// Keep backward-compatible named exports using getters
+export const auth: Auth = new Proxy({} as Auth, {
+  get(_, prop) {
+    return (getFirebaseAuth() as unknown as Record<string | symbol, unknown>)[prop]
+  },
+})
+
+export const db: Firestore = new Proxy({} as Firestore, {
+  get(_, prop) {
+    return (getFirebaseDb() as unknown as Record<string | symbol, unknown>)[prop]
+  },
+})
+
+export const storage: FirebaseStorage = new Proxy({} as FirebaseStorage, {
+  get(_, prop) {
+    return (getFirebaseStorage() as unknown as Record<string | symbol, unknown>)[prop]
+  },
+})
