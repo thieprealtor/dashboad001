@@ -113,6 +113,7 @@ Các modules hiện có: **tasks** (đầy đủ nhất), **users** (react-hook-
 - **CRUD pattern**: KHÔNG viết direct Firestore CRUD ở service — xử lý trên local state (callback pattern)
 - **Timestamps**: dùng `serverTimestamp()` khi seed
 - **Client vs Admin**: components/pages chỉ dùng `client.ts`
+- **Browser-only**: Firebase Client SDK KHÔNG chạy được trên server (SSR/prerender). `getFirestoreCollection` đã có guard `typeof window === "undefined"` → trả về mock data khi build
 
 ### Page types
 
@@ -137,8 +138,11 @@ Luôn dùng `cn()` từ `@/lib/utils` để merge Tailwind classes — KHÔNG d�
 
 ```typescript
 // Thử Firestore trước, fallback sang mock data nếu empty hoặc lỗi
+// Tự động skip trên server (SSR/prerender) — chỉ chạy trên browser
 const data = await getFirestoreCollection<TaskItem>("tasks", TaskMockData)
 ```
+
+> ⚠️ Không gọi Firestore trực tiếp trong Server Components — dùng `getFirestoreCollection` để có SSR-safe fallback tự động.
 
 ### Auth (src/lib/firebase/auth.ts & src/auth.ts)
 
@@ -154,7 +158,9 @@ const data = await getFirestoreCollection<TaskItem>("tasks", TaskMockData)
 **Server (NextAuth)** (server-only, không `NEXT_PUBLIC_`):
 `AUTH_SECRET`
 
-Xem `.env.example` để biết đầy đủ template.
+Xem `.env.local` để biết đầy đủ template.
+
+> ⚠️ Khi deploy lên Vercel: phải thêm tất cả các biến trên vào **Settings → Environment Variables**. Firebase client.ts khởi tạo với empty string nếu thiếu (không crash), nhưng Firestore queries sẽ dùng mock data cho đến khi env vars được set đúng.
 
 ## Thêm feature mới
 
@@ -186,3 +192,18 @@ Khi thêm feature mới, tham khảo skill **`nextjs-firebase-feature`** tại `
 - Firebase error messages tiếng Việt trong `auth.ts`
 - Mock data seeder là server action, dùng `client.ts` không cần Admin SDK
 - Nếu thêm feature mới: đọc SKILL.md trước khi code
+
+## Dependency Gotchas
+
+| Package | Version | Breaking change |
+|---|---|---|
+| `react-day-picker` | v10 | `table` → `month_grid`, `initialFocus` → `autoFocus`, `day_selected` → `selected` |
+| `react-resizable-panels` | v4 | `direction` → `orientation`, `onLayout` → `onLayoutChange`, `onCollapse` bỏ → dùng `onResize` |
+
+## Deploy checklist (Vercel)
+
+1. Push code lên GitHub (`git push`)
+2. Vercel tự detect và build
+3. Nếu lỗi TypeScript: chạy `npx tsc --noEmit` local để debug trước
+4. Env vars phải được thêm trong Vercel Dashboard → Settings → Environment Variables
+5. Firebase Client SDK chỉ chạy trên browser — không gọi trực tiếp trong Server Components

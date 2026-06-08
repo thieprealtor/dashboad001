@@ -15,6 +15,7 @@ import {
   HelpCircle,
   CreditCard,
   Users,
+  UserRound,
 } from "lucide-react"
 import Link from "next/link"
 import { Logo } from "@/components/logo"
@@ -75,6 +76,11 @@ const data = {
           title: "Users",
           url: "/users",
           icon: Users,
+        },
+        {
+          title: "Khách hàng",
+          url: "/customers",
+          icon: UserRound,
         },
       ],
     },
