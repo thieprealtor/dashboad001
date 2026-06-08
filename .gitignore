@@ -1,0 +1,139 @@
+# =========================
+# Dependencies
+# =========================
+node_modules/
+.pnp
+.pnp.js
+.yarn/install-state.gz
+
+# =========================
+# Next.js
+# =========================
+.next/
+out/
+build/
+dist/
+
+# Next.js build cache
+.next/cache/
+
+# =========================
+# Environment Variables
+# (QUAN TRỌNG: không commit file env)
+# =========================
+.env
+.env.local
+.env.development
+.env.development.local
+.env.test
+.env.test.local
+.env.production
+.env.production.local
+
+# =========================
+# Firebase
+# =========================
+.firebase/
+firebase-debug.log
+firestore-debug.log
+ui-debug.log
+database-debug.log
+.firebaserc
+
+# =========================
+# TypeScript
+# =========================
+*.tsbuildinfo
+next-env.d.ts
+
+# =========================
+# Testing
+# =========================
+/coverage
+*.lcov
+.nyc_output/
+
+# =========================
+# Package Managers
+# =========================
+# npm
+npm-debug.log*
+
+# yarn
+yarn-debug.log*
+yarn-error.log*
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+
+# pnpm
+pnpm-debug.log*
+.pnpm-debug.log*
+
+# =========================
+# OS / System Files
+# =========================
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Icon?
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Linux
+*~
+
+# =========================
+# Editor / IDE
+# =========================
+# VSCode
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+
+# JetBrains (WebStorm, IntelliJ)
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# Vim / Neovim
+*.swp
+*.swo
+*.swn
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+
+# Sublime Text
+*.tmlanguage.cache
+*.tmPreferences.cache
+*.stTheme.cache
+*.sublime-workspace
+
+# =========================
+# Logs & Debug
+# =========================
+logs/
+*.log
+lerna-debug.log*
+
+# =========================
+# Misc / Temporary
+# =========================
+*.pem
+.vercel
+.turbo
+*.tgz
