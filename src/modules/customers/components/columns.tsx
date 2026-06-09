@@ -153,6 +153,9 @@ export function getCustomerColumns({
     },
     {
       id: "actions",
+      header: () => (
+        <span className="text-xs font-medium text-muted-foreground">Hành động</span>
+      ),
       cell: ({ row }) => (
         <DataTableRowActions
           row={row}

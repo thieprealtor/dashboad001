@@ -2,17 +2,15 @@
 
 import { useState } from "react"
 import type { Row } from "@tanstack/react-table"
-import { Copy, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { Copy, Pencil, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -46,40 +44,54 @@ export function DataTableRowActions({
 
   return (
     <>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" className="h-8 w-8 p-0 cursor-pointer">
-            <span className="sr-only">Mở menu</span>
-            <MoreHorizontal className="h-4 w-4" />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end">
-          <DropdownMenuLabel>Hành động</DropdownMenuLabel>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => setShowEdit(true)}
-          >
-            <Pencil className="mr-2 h-4 w-4" />
-            Chỉnh sửa
-          </DropdownMenuItem>
-          <DropdownMenuItem
-            className="cursor-pointer"
-            onClick={() => onDuplicateCustomer?.(customer)}
-          >
-            <Copy className="mr-2 h-4 w-4" />
-            Nhân bản
-          </DropdownMenuItem>
-          <DropdownMenuSeparator />
-          <DropdownMenuItem
-            className="cursor-pointer text-destructive focus:text-destructive"
-            onClick={() => setShowDelete(true)}
-          >
-            <Trash2 className="mr-2 h-4 w-4" />
-            Xóa
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <TooltipProvider delayDuration={300}>
+        <div className="flex items-center gap-1">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 cursor-pointer text-muted-foreground hover:text-primary"
+                onClick={() => setShowEdit(true)}
+              >
+                <Pencil className="size-4" />
+                <span className="sr-only">Chỉnh sửa</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Chỉnh sửa</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 cursor-pointer text-muted-foreground hover:text-blue-600"
+                onClick={() => onDuplicateCustomer?.(customer)}
+              >
+                <Copy className="size-4" />
+                <span className="sr-only">Nhân bản</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Nhân bản</TooltipContent>
+          </Tooltip>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 cursor-pointer text-muted-foreground hover:text-destructive"
+                onClick={() => setShowDelete(true)}
+              >
+                <Trash2 className="size-4" />
+                <span className="sr-only">Xóa</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent side="bottom">Xóa</TooltipContent>
+          </Tooltip>
+        </div>
+      </TooltipProvider>
 
       {/* Edit Modal */}
       <AddCustomerModal

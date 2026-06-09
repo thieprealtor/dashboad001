@@ -13,6 +13,8 @@ import {
 
 import { getCustomerColumns } from "@/modules/customers/components/columns"
 import { DataTable } from "@/modules/customers/components/data-table"
+import { CustomerDetailSheet } from "@/modules/customers/components/customer-detail-sheet"
+import { AddCustomerModal } from "@/modules/customers/components/add-customer-modal"
 import {
   createCustomer,
   deleteCustomer,
@@ -25,7 +27,10 @@ import type { Customer } from "@/modules/customers/services/types/customer-types
 
 export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>(customerMockData)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(false)
+  const [selectedCustomer, setSelectedCustomer] = useState<Customer | null>(null)
+  const [isDetailOpen, setIsDetailOpen] = useState(false)
+  const [isEditOpen, setIsEditOpen] = useState(false)
 
   const refreshCustomers = useCallback(async () => {
     const list = await getCustomers()
@@ -45,13 +50,10 @@ export default function CustomersPage() {
     load()
   }, [refreshCustomers])
 
-  const handleAddCustomer = useCallback(
-    async (customer: Customer) => {
-      await createCustomer(customer)
-      await refreshCustomers()
-    },
-    [refreshCustomers]
-  )
+  const handleAddCustomer = useCallback(async (customer: Customer) => {
+    await createCustomer(customer)
+    setCustomers((prev) => [customer, ...prev])
+  }, [])
 
   const handleUpdateCustomer = useCallback(async (customer: Customer) => {
     await updateCustomer(customer)
@@ -71,6 +73,11 @@ export default function CustomersPage() {
     }
     await createCustomer(duplicate)
     setCustomers((prev) => [duplicate, ...prev])
+  }, [])
+
+  const handleRowClick = useCallback((customer: Customer) => {
+    setSelectedCustomer(customer)
+    setIsDetailOpen(true)
   }, [])
 
   const customerColumns = useMemo(
@@ -172,10 +179,28 @@ export default function CustomersPage() {
               data={customers}
               columns={customerColumns}
               onAddCustomer={handleAddCustomer}
+              onRowClick={handleRowClick}
             />
           </CardContent>
         </Card>
       </div>
+
+      <CustomerDetailSheet
+        customer={selectedCustomer}
+        open={isDetailOpen}
+        onOpenChange={setIsDetailOpen}
+        onEdit={(customer) => {
+          setSelectedCustomer(customer)
+          setIsEditOpen(true)
+        }}
+      />
+
+      <AddCustomerModal
+        open={isEditOpen}
+        onOpenChange={setIsEditOpen}
+        initialData={selectedCustomer || undefined}
+        onAddCustomer={handleUpdateCustomer}
+      />
     </>
   )
 }
