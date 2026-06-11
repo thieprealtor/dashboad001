@@ -27,6 +27,7 @@ import {
 import {
   categoryOptions,
   genderOptions,
+  statusOptions,
 } from "@/modules/customers/services/customer-mock-data"
 import { customerSchema, type Customer } from "@/modules/customers/services/types/customer-types"
 
@@ -42,6 +43,7 @@ const defaultForm: CustomerFormData = {
   id: "",
   name: "",
   category: "",
+  status: "lead",
   address: "",
   email: "",
   phone: "",
@@ -168,24 +170,45 @@ export function AddCustomerModal({
           </div>
         </div>
 
-        {/* Category */}
-        <div className="space-y-2">
-          <Label htmlFor="category">Ngành nghề</Label>
-          <Select
-            value={formData.category}
-            onValueChange={(v) => setFormData((p) => ({ ...p, category: v }))}
-          >
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Chọn ngành nghề" />
-            </SelectTrigger>
-            <SelectContent>
-              {categoryOptions.map((c) => (
-                <SelectItem key={c.value} value={c.value}>
-                  {c.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+        {/* Category + Status */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="category">Ngành nghề</Label>
+            <Select
+              value={formData.category}
+              onValueChange={(v) => setFormData((p) => ({ ...p, category: v }))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Chọn ngành nghề" />
+              </SelectTrigger>
+              <SelectContent>
+                {categoryOptions.map((c) => (
+                  <SelectItem key={c.value} value={c.value}>
+                    {c.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="status">Trạng thái</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(v) => setFormData((p) => ({ ...p, status: v }))}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Chọn trạng thái" />
+              </SelectTrigger>
+              <SelectContent>
+                {statusOptions.map((s) => (
+                  <SelectItem key={s.value} value={s.value}>
+                    {s.icon} {s.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
 
         {/* Phone + Email */}

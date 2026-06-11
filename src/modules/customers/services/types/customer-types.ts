@@ -23,10 +23,19 @@ export const categoryOptions = [
   { value: "other", label: "Khác" },
 ] as const
 
+export const statusOptions = [
+  { value: "lead", label: "Lead", icon: "🔵" },
+  { value: "contacted", label: "Đã liên hệ", icon: "📞" },
+  { value: "met", label: "Đã gặp mặt", icon: "🤝" },
+  { value: "win", label: "Win", icon: "✅" },
+  { value: "lose", label: "Lose", icon: "❌" },
+] as const
+
 export const customerSchema = z.object({
   id: z.string(),
   name: z.string(),
   category: z.string(),
+  status: z.string(),
   address: z.string(),
   email: z.string(),
   phone: z.string(),

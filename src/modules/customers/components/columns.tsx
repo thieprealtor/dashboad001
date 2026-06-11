@@ -6,7 +6,7 @@ import { Mail, Phone, User } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Checkbox } from "@/components/ui/checkbox"
 
-import { categoryOptions, genderOptions } from "@/modules/customers/services/customer-mock-data"
+import { categoryOptions, genderOptions, statusOptions } from "@/modules/customers/services/customer-mock-data"
 import type { Customer } from "@/modules/customers/services/types/customer-types"
 import { DataTableColumnHeader } from "./data-table-column-header"
 import { DataTableRowActions } from "./data-table-row-actions"
@@ -83,6 +83,44 @@ export function getCustomerColumns({
             {cat.label}
           </Badge>
         ) : null
+      },
+      filterFn: (row, id, value) => value.includes(row.getValue(id)),
+    },
+    {
+      accessorKey: "status",
+      header: ({ column }) => (
+        <DataTableColumnHeader column={column} title="Trạng thái" />
+      ),
+      cell: ({ row }) => {
+        const statusValue = row.getValue("status") as string
+        const status = statusOptions.find((s) => s.value === statusValue)
+        if (!status) return <span className="text-muted-foreground text-sm">—</span>
+
+        const colorMap: Record<string, string> = {
+          lead: "bg-blue-500/15 text-blue-700 border-blue-300 dark:text-blue-400 dark:border-blue-700",
+          contacted: "bg-amber-500/15 text-amber-700 border-amber-300 dark:text-amber-400 dark:border-amber-700",
+          met: "bg-violet-500/15 text-violet-700 border-violet-300 dark:text-violet-400 dark:border-violet-700",
+          win: "bg-emerald-500/15 text-emerald-700 border-emerald-300 dark:text-emerald-400 dark:border-emerald-700",
+          lose: "bg-red-500/15 text-red-700 border-red-300 dark:text-red-400 dark:border-red-700",
+        }
+
+        const dotColorMap: Record<string, string> = {
+          lead: "bg-blue-500",
+          contacted: "bg-amber-500",
+          met: "bg-violet-500",
+          win: "bg-emerald-500",
+          lose: "bg-red-500",
+        }
+
+        return (
+          <Badge
+            variant="outline"
+            className={`whitespace-nowrap font-medium gap-1.5 ${colorMap[statusValue] ?? ""}`}
+          >
+            <span className={`inline-block size-2 rounded-full ${dotColorMap[statusValue] ?? "bg-muted-foreground"}`} />
+            {status.label}
+          </Badge>
+        )
       },
       filterFn: (row, id, value) => value.includes(row.getValue(id)),
     },

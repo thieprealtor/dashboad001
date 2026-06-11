@@ -1,6 +1,6 @@
 "use client"
 
-import { Pencil, Mail, Phone, MapPin, Tag, User2, StickyNote, Hash } from "lucide-react"
+import { Pencil, Mail, Phone, MapPin, Tag, User2, StickyNote, Hash, Activity } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -16,6 +16,7 @@ import {
 import {
   categoryOptions,
   genderOptions,
+  statusOptions,
 } from "@/modules/customers/services/customer-mock-data"
 import type { Customer } from "@/modules/customers/services/types/customer-types"
 
@@ -95,9 +96,18 @@ export function CustomerDetailSheet({
 
   const categoryLabel = categoryOptions.find((c) => c.value === customer.category)?.label
   const genderLabel = genderOptions.find((g) => g.value === customer.gender)?.label
+  const statusInfo = statusOptions.find((s) => s.value === customer.status)
   const categoryClass = categoryColorMap[customer.category] ?? categoryColorMap.other
   const avatarGradient = getAvatarColor(customer.id)
   const initials = getInitials(customer.name)
+
+  const statusColorMap: Record<string, string> = {
+    lead: "bg-blue-500/15 text-blue-700 border-blue-300 dark:text-blue-400 dark:border-blue-700",
+    contacted: "bg-amber-500/15 text-amber-700 border-amber-300 dark:text-amber-400 dark:border-amber-700",
+    met: "bg-violet-500/15 text-violet-700 border-violet-300 dark:text-violet-400 dark:border-violet-700",
+    win: "bg-emerald-500/15 text-emerald-700 border-emerald-300 dark:text-emerald-400 dark:border-emerald-700",
+    lose: "bg-red-500/15 text-red-700 border-red-300 dark:text-red-400 dark:border-red-700",
+  }
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
@@ -203,6 +213,21 @@ export function CustomerDetailSheet({
               icon={<User2 className="size-4" />}
               label="Giới tính"
               value={<Badge variant="secondary">{genderLabel}</Badge>}
+            />
+          )}
+
+          {statusInfo && (
+            <InfoRow
+              icon={<Activity className="size-4" />}
+              label="Trạng thái"
+              value={
+                <Badge
+                  variant="outline"
+                  className={`font-medium ${statusColorMap[customer.status] ?? ""}`}
+                >
+                  {statusInfo.icon} {statusInfo.label}
+                </Badge>
+              }
             />
           )}
 
